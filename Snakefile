@@ -74,7 +74,7 @@ if len(set(INPUT_FILES)) != len(INPUT_FILES):
     exit(1)
 
 rule all:
-    input: expand(result("FastQC/{name}_fastqc.html"), name=INPUT_FILES)
+    input: expand(result("FastQC/{name}"), name=INPUT_FILES)
 
 rule checksums:
     output: "checksums.ok"
@@ -96,5 +96,5 @@ rule Uncompress:
 
 rule FastQC:
     input: "fastq/{name}.fastq"
-    output: result("FastQC/{name}_fastqc.html"),result("FastQC/{name}_fastqc.zip") 
-    shell: 'fastqc {input} -o {output}'
+    output: result("FastQC/{name}")
+    shell: 'mkdir -p {output} && (fastqc {input} -o {output} || (rm -rf {output} && exit 1))'
