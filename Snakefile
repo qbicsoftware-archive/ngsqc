@@ -73,8 +73,13 @@ if len(set(INPUT_FILES)) != len(INPUT_FILES):
     print("Some input file names are not unique")
     exit(1)
 
+OUTPUT_FILES = []
+
+OUTPUT_FILES.extend(expand(result("FastQC_{name}.zip"), name=INPUT_FILES))
+OUTPUT_FILES.extend(expand(result("FastQC_{name}.html"), name=INPUT_FILES))
+
 rule all:
-    input: expand(result("FastQC/{name}"), name=INPUT_FILES)
+    input: OUTPUT_FILES
 
 rule checksums:
     output: "checksums.ok"
@@ -96,5 +101,10 @@ rule Uncompress:
 
 rule FastQC:
     input: "fastq/{name}.fastq"
-    output: result("FastQC/{name}")
+    output: "FastQC/{name}"
     shell: 'mkdir -p {output} && (fastqc {input} -o {output} || (rm -rf {output} && exit 1))'
+
+rule FastQCCpToResult:
+    input: "FastQC/{name}"
+    output: result("FastQC_{name}.zip"), result("FastQC_{name}.html")
+    shell: "cp {input}/{wildcards.name}_fastqc.zip {input}/{wildcards.name}_fastqc.html {output}"
