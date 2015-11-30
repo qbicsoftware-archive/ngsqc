@@ -106,5 +106,10 @@ rule FastQC:
 
 rule FastQCCpToResult:
     input: "FastQC/{name}"
-    output: result("FastQC_{name}.zip"), result("FastQC_{name}.html")
-    shell: "cp {input}/{wildcards.name}_fastqc.zip {input}/{wildcards.name}_fastqc.html {output}"
+    output: result("FastQC_{name}.zip")
+    shell: "cp {input}/{wildcards.name}_fastqc.zip {output}"
+
+rule FastQCCpToResultHTML:
+    input: "FastQC/{name}"
+    output: result("FastQC_{name}.html")
+    shell: "cp {input}/{wildcards.name}_fastqc.html {output}"
